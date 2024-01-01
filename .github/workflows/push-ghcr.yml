@@ -1,0 +1,45 @@
+name: Upload Image
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build
+        run: dotnet publish ${{ inputs.project_path }} 
+          -c Release 
+          -p PublishProfile=DefaultContainer 
+          -p ContainerFamily=jammy-chiseled 
+          -p ContainerRepository=ghcr.io/${{ github.repository }}
+          -p ContainerRegistry=ghcr.io
+          -p ContainerImageTags='"latest;${{ inputs.tag }}"'

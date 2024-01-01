@@ -1,0 +1,26 @@
+name: Build Artifact
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      project_path: './src/AnyMails.Api/AnyMails.Api.csproj'
+      branch: ${{ github.ref_name }}
+    secrets: inherit
+
+  artifact:
+    permissions: write-all
+    needs: ci
+    uses: ./.github/workflows/push-ghcr.yml
+    with:
+      project_path: './src/AnyMails.Api/AnyMails.Api.csproj'
+      branch: ${{ github.ref_name }}
+      tag: branch-${{ github.ref_name }};commit-${{ github.event.inputs.commit_sha || github.sha }}
+    secrets: inherit

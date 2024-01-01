@@ -1,0 +1,15 @@
+name: PR CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pr:
+    uses: ./.github/workflows/ci.yml
+    with:
+      project_path: './src/AnyMails.Api/AnyMails.Api.csproj'
+      branch: ${{ github.sha }}
+    secrets: inherit
