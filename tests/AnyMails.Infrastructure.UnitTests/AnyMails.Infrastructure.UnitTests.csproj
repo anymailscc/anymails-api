@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\AnyMails.Api\AnyMails.Api.csproj" />
+      <ProjectReference Include="..\..\src\AnyMails.Infrastructure\AnyMails.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
