@@ -1,0 +1,35 @@
+name: Cleanup Images
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */1 * * *'
+
+env:
+  skip_tags: latest,branch-main,stage-*
+  
+jobs:
+  clean-ghcr:
+    permissions: write-all
+    name: Delete old unused container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old images
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ${{ github.event.repository.name }}
+          cut-off: One min ago UTC
+          skip-tags: ${{ env.skip_tags }},branch-*
+          account-type: personal
+          token: ${{ secrets.GITHUB_TOKEN }}
+          token-type: github-token
+
+      - name: Prune Container Images
+        uses: snok/container-retention-policy@v2.2.1
+        with:
+          image-names: ${{ github.event.repository.name }}
+          cut-off: One week ago UTC
+          skip-tags: ${{ env.skip_tags }}
+          account-type: personal
+          token: ${{ secrets.GITHUB_TOKEN }}
+          token-type: github-token
