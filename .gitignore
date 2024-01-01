@@ -301,3 +301,4 @@ riderModule.iml
 
 local.settings.json
 appsettings.Local.json
+**/docker
