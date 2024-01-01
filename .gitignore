@@ -297,3 +297,4 @@ FodyWeavers.xsd
 obj/
 riderModule.iml
 /_ReSharper.Caches/
+/logs
