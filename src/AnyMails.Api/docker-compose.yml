@@ -1,0 +1,19 @@
+﻿version: '3.9'
+
+networks:
+  anymails_network:
+
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    networks:
+      - anymails_network
+    restart: unless-stopped
+    ports:
+      - "5080:80"
+      - "5081:5341"
+    environment:
+      ACCEPT_EULA: Y
+    volumes:
+      - ./docker/data:/data
