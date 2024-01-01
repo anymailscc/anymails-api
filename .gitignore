@@ -298,3 +298,6 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 /logs
+
+local.settings.json
+appsettings.Local.json
