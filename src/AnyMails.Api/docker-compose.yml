@@ -19,7 +19,7 @@ services:
       - ./docker/seq/data:/data
 
   redis:
-    image: redis:latest
+    image: redis/redis-stack-server:latest
     container_name: redis
     networks:
       - anymails_network

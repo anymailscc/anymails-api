@@ -14,10 +14,17 @@ builder.Host
 builder.Services
     .AddJsonOptions()
     .Configure<RouteOptions>(options => { options.LowercaseUrls = true; })
-    .AddCustomOutputCache(options =>
+    .AddOutputCache(opt =>
     {
-        options.InstanceName = Assembly.GetExecutingAssembly().FullName;
-        options.Configuration = $"{builder.Configuration["Redis:Host"]}:{builder.Configuration["Redis:Port"]}";
+        opt.DefaultExpirationTimeSpan = TimeSpan.FromMinutes(1);
+    })
+    .AddStackExchangeRedisOutputCache(options =>
+    {
+        var connectionString = builder.Configuration.GetConnectionString("Redis");
+        if(string.IsNullOrEmpty(connectionString)) return;
+
+        options.InstanceName = Assembly.GetExecutingAssembly().GetName().Name;
+        options.Configuration = connectionString;
     })
     .AddInfrastructure()
     .AddApplication()
@@ -27,17 +34,17 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.UseOutputCache();
-
 app.UseServiceHealthChecks();
+
+app.UseOutputCache();
 
 app.MapReleaseEndpoint();
 
 app.MapGet("/", (ILogger logger) =>
-{
-    logger.Information("Hello world");
-    return "Hello World!";
-})
-.CacheOutput(x => x.Expire(TimeSpan.FromSeconds(30)));
+    {
+        logger.Information("Hello world");
+        return "Hello World!";
+    })
+    .CacheOutput(x => x.Expire(TimeSpan.FromSeconds(30)));
 
 app.Run();
