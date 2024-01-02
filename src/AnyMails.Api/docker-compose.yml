@@ -16,4 +16,26 @@ services:
     environment:
       ACCEPT_EULA: Y
     volumes:
-      - ./docker/data:/data
+      - ./docker/seq/data:/data
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    networks:
+      - anymails_network
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    depends_on:
+      - redis
+    container_name: redis-insight
+    networks:
+      - anymails_network
+    restart: unless-stopped
+    ports:
+      - "5082:8001"
+    volumes:
+      - ./docker/redisinsight:/db
